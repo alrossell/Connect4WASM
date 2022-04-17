@@ -1,0 +1,7 @@
+.Game { 
+  display: flex;
+}
+
+.col:hover {
+  filter: brightness(130%);
+}

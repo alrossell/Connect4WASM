@@ -1,22 +1,12 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 
-import Sample from "./Sample.js";
-import SampleWASM from "./Sample.wasm";
+import Game from "./src/Game";
 
-const sample = Sample({
-  locateFile: () => {
-    return SampleWASM;
-  },
-});
-
-sample.then((core) => {
-  console.log(core.add(1, 2));
-});
-
-ReactDOM.render(
+const container = document.getElementById("root");
+const root = createRoot(container); 
+root.render(
   <div>
-    <h1>Using WebAssembly with React From Scratch!</h1>
-  </div>,
-  document.getElementById("root")
+    <Game />
+  </div>
 );
