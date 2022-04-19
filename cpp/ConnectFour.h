@@ -24,6 +24,7 @@ public:
 
     bool placePiece(bool player, int col);
 
+    int getLastPlacedRow();
     uint64_t rowColToInt(int col, int row);
     int getColCount();
     bool checkFour();

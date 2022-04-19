@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Row from "./Row"
 
-import findFour from "./findFour.js"
-
 import blueTile from "./assests/BlueTile.png";
 import redTile from "./assests/RedTile.png";
 import emptyTile from "./assests/EmptyTile.png";
@@ -15,60 +13,63 @@ import "./Game.css"
 const rowCount = 6
 const colCount = 7
 
-function findEmptyTile(col) {
-  for (let index = rowCount - 1; index >= 0; index--) {
-    if (col[index] === emptyTile) {
-      return index;
-    }
-  }
-  return -1;
-}
-
 function Game() {
   const board = new Array(colCount)
     .fill(0)
     .map(() => new Array(rowCount).fill(emptyTile));
   const [gameState, changeGameState] = useState(board);
+  const [cppGameState, changeCppGameState] = useState(null);
+  const [turnCount, changeTurnCount] = useState(0)
 
-  const [player, setPlayer] = useState(true);
+  useEffect(() => {
+    const instance = ConnectFourBinder({
+      locateFile: () => {
+        return ConnectFourBinderWASM;
+      },
+    });
 
-  const placeTile = (colIndex) => {
+    instance.then((module) => {
+      let game = new module.ConnectFourGame();
+      changeCppGameState(game);
+    });
+  }, []);
+
+  const [player1, setPlayer] = useState(true);
+
+  function placePiece(colIndex, player) {
     let newGameState = gameState;
-    let rowIndex = findEmptyTile(newGameState[colIndex]);
-    if (rowIndex !== -1) {
-      newGameState[colIndex][rowIndex] = player ? redTile : blueTile;
-      setPlayer(!player);
-    }
-    changeGameState([...newGameState]);
+    let newRow = cppGameState.placePiece(player, colIndex + 1);
 
-    if (findFour(gameState, colIndex, rowIndex)) {
+    if (newRow !== -1) {
+      newGameState[colIndex][rowCount - newRow] = player ? redTile : blueTile;
+    } else {
+      return false
+    }
+
+    if (cppGameState.checkFour()) {
       alert(`Player ${player ? "one" : "two"} Wins!`);
-      let newBoard = new Array(colCount)
+      newGameState = new Array(colCount)
         .fill(0)
         .map(() => new Array(rowCount).fill(emptyTile));
-      changeGameState(newBoard);
+      cppGameState.newGame();
+    }
+    return true
+  }
+
+  const playerTurn = (colIndex) => {
+    if (placePiece(colIndex, player1)) {
+      let cpuColIndex = cppGameState.nextMove(!player1, 15);
+      placePiece(cpuColIndex-1, !player1);
+      changeTurnCount(turnCount + 2);
+    } else {
+      alert("Column Full");
     }
   };
-
-  const sample = ConnectFourBinder({
-    locateFile: () => {
-      return ConnectFourBinderWASM;
-    },
-  });
-
-  sample.then((module) => {
-    var instance = new module.ConnectFourGame();
-    console.log(instance.getMove());
-    console.log(instance.placePiece(true, 1));
-    console.log(instance.placePiece(true, 1));
-    console.log(instance.placePiece(true, 1));
-    console.log(instance.placePiece(true, 1));
-  })
 
   return (
     <div className="Game">
       {gameState.map((col, index) => (
-        <div key={index} className="col" onClick={() => placeTile(index)}>
+        <div key={index} className="col" onClick={() => playerTurn(index)}>
           <Row key={index} tiles={col} />
         </div>
       ))}

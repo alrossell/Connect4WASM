@@ -111,6 +111,7 @@
         "__tuple": "cpp",
         "string_view": "cpp",
         "*.ipp": "cpp",
-        "__assert": "cpp"
+        "__assert": "cpp",
+        "span": "cpp"
     }
 }

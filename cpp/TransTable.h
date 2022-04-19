@@ -4,7 +4,7 @@
 #include <vector>
 #include <stdint.h>
 
-class TranspositionTable
+class TransTable
 {
     private:
         struct Entry
@@ -18,7 +18,7 @@ class TranspositionTable
         unsigned int index(int64_t key);
 
     public:
-        TranspositionTable(unsigned int size);
+        TransTable(unsigned int size);
         void put(int64_t key, int8_t val);
         int8_t get(int64_t);
 };

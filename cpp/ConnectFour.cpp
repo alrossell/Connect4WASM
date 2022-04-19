@@ -69,6 +69,11 @@ bool connectFour::placePiece(bool player, int col)
 
 // ---------------------------------------------------------------------------------
 
+int connectFour::getLastPlacedRow()
+{
+    return lastPlacedRow;
+}
+
 int connectFour::getColCount()
 {
     return colCount;
@@ -164,7 +169,7 @@ bool connectFour::checkFour()
     }
 
     // Diagonal up to the right
-    for (int col = lastPlacedCol + 1, row = lastPlacedRow + 1; col <= colCount && row > rowCount; col++, row++)
+    for (int col = lastPlacedCol + 1, row = lastPlacedRow + 1; col <= colCount && row <= rowCount; col++, row++)
     {
         if (!isOpen(col, row, lastPlayer))
         {

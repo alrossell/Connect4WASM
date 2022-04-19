@@ -1,6 +1,6 @@
-#include "connectFour.h"
-#include "mini_max.h"
-#include "TranspositionTable.h"
+#include "ConnectFour.h"
+#include "MiniMax.h"
+#include "TransTable.h"
 
 #include <climits>
 #include <limits.h>
@@ -14,8 +14,9 @@ using namespace std;
 //Maximizing agent: false - openent agent
 //Depth: how many more turns to process
 //state: current game state to evaluate
-int miniMax(connectFour state, int depth, int alpha, int beta, bool maximizingAgent, TranspositionTable * table)
+int miniMax(connectFour state, int depth, int8_t *alpha, int8_t *beta, bool player1, TransTable *table)
 {
+    
     if (depth == 0)
     {
         return 0;
@@ -23,48 +24,47 @@ int miniMax(connectFour state, int depth, int alpha, int beta, bool maximizingAg
 
     if (state.checkFour())
     {
-        if(maximizingAgent)
+        // If player 2 won last turn
+        if (player1)
         {
-            return -depth;   
+            return -(depth);   
         } else 
         {
-            return depth;
+            return (depth);
         }
     }
 
-    if (maximizingAgent)
-    {
-        int8_t maxEval = INT8_MIN;
-        int8_t eval;
+    // int8_t because its stored as one byte in Transposition Table
+    int8_t eval;
 
+    // Player 1 turn
+    if (player1)
+    {
+        // int8_t because its stored as one byte in Transposition Table
+        int8_t maxEval = INT8_MIN;
         for (int col = 1; col <= state.getColCount(); col++)
         {
             connectFour newState{state};
-            if (newState.placePiece(maximizingAgent, col))
+            if (newState.placePiece(player1, col))
             {
-                // int8_t score = table.get(newState.mask);
-                // if(score != -128) 
-                // {
-                //     eval = score;
-                // } else 
-                // {
-                //     eval = miniMax(newState, depth - 1, alpha, beta, !maximizingAgent, table);
-                //     table.put(newState.mask, eval);
-                // }
-
-                eval = miniMax(newState, depth - 1, alpha, beta, !maximizingAgent, table);
-
-                int test = eval;
+                // if score is -128 then it's 
+                int8_t score = table->get(newState.mask);
+                if(score != -128) {
+                    eval = score;
+                } else {
+                    eval = miniMax(newState, depth - 1, alpha, beta, !player1, table);
+                    table->put(newState.mask, eval);
+                }
 
                 if (eval > maxEval)
                 {
                     maxEval = eval;
                 }
-                if (eval > alpha)
+                if (eval > *alpha)
                 {
-                    alpha = eval;
+                    *alpha = eval;
                 }
-                if(beta <= alpha)
+                if(*beta <= *alpha)
                 {
                     break;
                 }
@@ -74,33 +74,32 @@ int miniMax(connectFour state, int depth, int alpha, int beta, bool maximizingAg
     } else 
     {
         int8_t minEval = INT8_MAX;
-        int8_t eval;
         for (int col = 1; col <= state.getColCount(); col++)
         {
             connectFour newState{state};
-            if (newState.placePiece(maximizingAgent, col))
+            if (newState.placePiece(player1, col))
             {
-                // int8_t score = table.get(newState.mask);
-                // if (score != -128)
-                // {
-                //     eval = score;
-                // }
-                // else
-                // {
-                //     eval = miniMax(newState, depth - 1, alpha, beta, !maximizingAgent, table);
-                //     table.put(newState.mask, eval);
-                // }
+                int8_t score = table->get(newState.mask);
+                if (score != -128)
+                {
+                    eval = score;
+                }
+                else
+                {
+                    eval = miniMax(newState, depth - 1, alpha, beta, !player1, table);
+                    table->put(newState.mask, eval);
+                }
 
-                eval = miniMax(newState, depth - 1, alpha, beta, !maximizingAgent, table);
+                eval = miniMax(newState, depth - 1, alpha, beta, !player1, table);
                 if (eval < minEval)
                 {
                     minEval = eval;
                 }
-                if (eval < beta)
+                if (eval < *beta)
                 {
-                    beta = eval;
+                    *beta = eval;
                 }
-                if (beta <= alpha)
+                if (*beta <= *alpha)
                 {
                     break;
                 }
@@ -110,13 +109,50 @@ int miniMax(connectFour state, int depth, int alpha, int beta, bool maximizingAg
     }
 }
 
-// int main() 
-// {
-//     connectFour game{};
+int getMove(connectFour state, int depth, bool player1)
+{
+    int bestCol = 1;
+    int8_t alpha = INT8_MIN;
+    int8_t beta = INT8_MAX;
+    int8_t bestEval;
 
-//     int depth = 1;
-//     int8_t alpha = 1;
-//     int8_t beta = 1;
-//     bool max = false;
-//     miniMax(game, depth, alpha, beta, max);
-// }
+    if(player1) {
+        bestEval = INT8_MIN;
+    } else {
+        bestEval = INT8_MAX;
+    }
+
+    int8_t eval;
+    TransTable* table = new TransTable(1000000);
+
+    if (player1) {
+        for (int col = 1; col <= state.getColCount(); col++)
+        {
+            connectFour newState{state};
+            if (newState.placePiece(false, col))
+            {
+                eval = miniMax(newState, depth - 1, &alpha, &beta, true, table);
+                if (eval > bestEval)
+                {
+                    bestEval = eval;
+                    bestCol = col;
+                } 
+            }
+        }
+    } else {
+        for (int col = 1; col <= state.getColCount(); col++)
+        {
+            connectFour newState{state};
+            if (newState.placePiece(false, col))
+            {
+                eval = miniMax(newState, depth - 1, &alpha, &beta, true, table);
+                if (eval < bestEval)
+                {
+                    bestEval = eval;
+                    bestCol = col;
+                }
+            }
+        }
+    }
+    return bestCol;
+}
