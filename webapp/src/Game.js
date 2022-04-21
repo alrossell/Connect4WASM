@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+
 import Row from "./Row"
 
 import blueTile from "./assests/BlueTile.png";
@@ -13,13 +15,14 @@ import "./Game.css"
 const rowCount = 6
 const colCount = 7
 
-function Game() {
+function Game(props) {
+  console.log(props.location.state)
   const board = new Array(colCount)
     .fill(0)
     .map(() => new Array(rowCount).fill(emptyTile));
   const [gameState, changeGameState] = useState(board);
   const [cppGameState, changeCppGameState] = useState(null);
-  const [turnCount, changeTurnCount] = useState(0)
+  const [turnCount, changeTurnCount] = useState(0);
 
   useEffect(() => {
     const instance = ConnectFourBinder({
@@ -56,6 +59,15 @@ function Game() {
     return true
   }
 
+  const newGame = () => {
+    let newBoard = new Array(colCount)
+    .fill(0)
+    .map(() => new Array(rowCount).fill(emptyTile));
+    changeGameState(newBoard);
+    cppGameState.newGame();
+    changeTurnCount(0);
+  }
+
   const playerTurn = (colIndex) => {
     if (placePiece(colIndex, player1)) {
       let cpuColIndex = cppGameState.nextMove(!player1, 15);
@@ -68,12 +80,23 @@ function Game() {
 
   return (
     <div className="Game">
-      {gameState.map((col, index) => (
-        <div key={index} className="col" onClick={() => playerTurn(index)}>
-          <Row key={index} tiles={col} />
-        </div>
-      ))}
+      <div className="GameContainer">
+        {gameState.map((col, index) => (
+          <div key={index} className="col" onClick={() => playerTurn(index)}>
+            <Row key={index} tiles={col} />
+          </div>
+        ))}
+      </div>
+      <div className="navBar">
+        <Link className="gameLink" to="../">
+          Home
+        </Link>
+        <Link className="gameLink" to="../game/" onClick={() => newGame()}>
+          New game
+        </Link>
+      </div>
     </div>
+    
   );
 }
 

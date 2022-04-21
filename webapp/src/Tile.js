@@ -4,7 +4,7 @@ import "./Tile.css";
 function Tile(props) {
   return (
     <div className="tile">
-      <img src={props.tile} />
+      <img className="image" src={props.tile} />
     </div>
   );
 }

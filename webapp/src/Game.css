@@ -1,5 +1,19 @@
-.Game { 
+.navBar {
   display: flex;
+  justify-content: center;
+  margin-top: 2vh;
+}
+
+.gameLink {
+  font-size: 2em;
+  color: black;
+  margin-left: 2vh;
+  margin-right: 2vh;
+}
+
+.GameContainer { 
+  display: flex;
+  justify-content: center;
 }
 
 .col:hover {

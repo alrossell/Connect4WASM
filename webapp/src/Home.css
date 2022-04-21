@@ -1,0 +1,25 @@
+.Home {
+    display: flex;
+    flex-direction: column ;
+    text-align: center;
+    margin-top: 15vh;
+    font-size: 2.5em;
+}
+
+.Options {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.Player {
+    margin: 10vh;
+}
+
+#Player1 {
+    color: blue;
+}
+
+#Player2 {
+    color: red;
+}
