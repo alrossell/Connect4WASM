@@ -34,11 +34,6 @@ public:
         return getMove(game, depth, player);
     }
 
-    int getMask() 
-    {
-        return game.mask;
-    }
-
     void newGame()
     {
         game = connectFour();
@@ -55,8 +50,7 @@ EMSCRIPTEN_BINDINGS(my_class_example)
         .function("placePiece", &ConnectFourGame::placePiece)
         .function("checkFour", &ConnectFourGame::checkFour)
         .function("nextMove", &ConnectFourGame::nextMove)
-        .function("newGame", &ConnectFourGame::newGame)
-        .function("getMask", &ConnectFourGame::getMask);
+        .function("newGame", &ConnectFourGame::newGame);
 }
 
 // int main() {

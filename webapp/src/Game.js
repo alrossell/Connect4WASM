@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import Row from "./Row"
 
@@ -14,9 +14,12 @@ import "./Game.css"
 
 const rowCount = 6
 const colCount = 7
+const moves = 12;
 
-function Game(props) {
-  console.log(props.location.state)
+function Game() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [player1, setPlayer] = useState(searchParams.get("player1"));
+
   const board = new Array(colCount)
     .fill(0)
     .map(() => new Array(rowCount).fill(emptyTile));
@@ -33,11 +36,21 @@ function Game(props) {
 
     instance.then((module) => {
       let game = new module.ConnectFourGame();
-      changeCppGameState(game);
+      
+      if(player1 == "false") {
+        let newGameState = gameState;
+        let colIndex = game.nextMove(true, moves);
+        let newRow = game.placePiece(true, colIndex);
+        newGameState[colIndex-1][rowCount - newRow] = player1 ? redTile : blueTile;
+
+        changeTurnCount(turnCount + 1);
+        changeCppGameState(game);
+        setPlayer(false);
+      } else {
+        changeCppGameState(game);
+      }
     });
   }, []);
-
-  const [player1, setPlayer] = useState(true);
 
   function placePiece(colIndex, player) {
     let newGameState = gameState;
@@ -69,8 +82,9 @@ function Game(props) {
   }
 
   const playerTurn = (colIndex) => {
+    console.clear();
     if (placePiece(colIndex, player1)) {
-      let cpuColIndex = cppGameState.nextMove(!player1, 15);
+      let cpuColIndex = cppGameState.nextMove(!player1, moves);
       placePiece(cpuColIndex-1, !player1);
       changeTurnCount(turnCount + 2);
     } else {
@@ -91,7 +105,7 @@ function Game(props) {
         <Link className="gameLink" to="../">
           Home
         </Link>
-        <Link className="gameLink" to="../game/" onClick={() => newGame()}>
+        <Link className="gameLink" to="./" onClick={() => newGame()}>
           New game
         </Link>
       </div>

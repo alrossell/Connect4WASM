@@ -24,7 +24,6 @@ connectFour::connectFour()
     this->connectFour::player1Board = 0;
     // Player 2 bool = false
     this->connectFour::player2Board = 0;
-    this->connectFour::mask = 0;
 
 }
 
@@ -58,8 +57,7 @@ bool connectFour::placePiece(bool player, int col)
     } else {
         player2Board = player2Board | rowColToInt(col, openRow);
     }
-    mask = mask | rowColToInt(col, openRow);
-      
+
     lastPlacedCol = col;
     lastPlacedRow = openRow;
     lastPlayer = player;
@@ -82,6 +80,13 @@ int connectFour::getColCount()
 uint64_t connectFour::rowColToInt(int col, int row)
 {
     return (uint64_t)1 << (7 - col) << (8 * (row - 1));
+}
+
+uint64_t connectFour::getMask(bool player1)
+{
+    uint64_t mask = player1Board | player2Board;
+    uint64_t bottom = 256;
+    return mask + player1Board + bottom;
 }
 
 bool connectFour::isOpen(int col, int row, bool player)

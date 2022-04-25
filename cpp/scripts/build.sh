@@ -8,7 +8,7 @@ emcc -c TransTable.cpp -o TransTable.o
 emcc -c MiniMax.cpp -o MiniMax.o
 emcc -c ConnectFourBinder.cpp -o ConnectFourBinder.o
 
-emcc -lembind ConnectFour.o TransTable.o MiniMax.o ConnectFourBinder.o -o ConnectFourBinder.js -s WASM=1 -s MODULARIZE=1 -s ALLOW_MEMORY_GROWTH=1
+emcc -lembind -O3 ConnectFour.o TransTable.o MiniMax.o ConnectFourBinder.o -o ConnectFourBinder.js -s WASM=1 -s MODULARIZE=1 -s ALLOW_MEMORY_GROWTH=1
 
 rm ConnectFour.o
 rm ConnectFourBinder.o

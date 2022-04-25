@@ -7,7 +7,7 @@
 struct Entry
 {
     int64_t key; 
-    int8_t val;   
+    int8_t val;
 };
 
 TransTable::TransTable(unsigned int size) : T(size)

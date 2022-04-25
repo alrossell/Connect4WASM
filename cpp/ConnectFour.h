@@ -18,7 +18,6 @@ private:
 public:
     uint64_t player1Board;
     uint64_t player2Board;
-    uint64_t mask;
 
     connectFour();
 
@@ -29,6 +28,7 @@ public:
     int getColCount();
     bool checkFour();
     bool isOpen(int col, int row, bool player);
+    uint64_t getMask(bool player1);
 
     void printBoard();
 };
